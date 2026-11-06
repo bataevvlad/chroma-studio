@@ -1,0 +1,1139 @@
+{
+ "id": "9a4977c4-6e26-424d-9320-d1b85eb6fb13",
+ "revision": 0,
+ "last_node_id": 100,
+ "last_link_id": 24,
+ "nodes": [
+  {
+   "id": 100,
+   "type": "MarkdownNote",
+   "pos": [
+    40,
+    -440
+   ],
+   "size": [
+    760,
+    360
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "MarkdownNote"
+   },
+   "widgets_values": [
+    "# Image to video (Wan 2.2)\n\n1. **Pick your image** in the green *Load Image* box.\n2. **Write the motion** in the green *Your prompt* box, like \"she turns her head and smiles\".\n3. Set **width and height** in *Video size* to match your image: 480 x 832 for portrait, 832 x 480 for landscape.\n4. Click the blue **Run** button at the top of the screen.\n5. The video shows in *Result* and is saved to `ComfyUI/output/video`.\n\n**Speed:** about 10 minutes for this 3-second clip on this Mac. Close other heavy apps first, because video uses nearly all the memory, and keep at least 40 GB of disk free.\n\n**Length** is in frames at 16 per second, and must be 4n+1: 33 = 2s, 49 = 3s, 81 = 5s.\n\n**NSFW LoRA:** there are two, high and low. Keep both at the same strength. Put the trigger word `nsfwsks` in your prompt to activate them.\n\nLeave the 4 steps alone: the speed LoRAs are built for exactly that.\n"
+   ]
+  },
+  {
+   "id": 1,
+   "type": "LoadImage",
+   "pos": [
+    40,
+    40
+   ],
+   "size": [
+    340,
+    400
+   ],
+   "flags": {},
+   "order": 1,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      6
+     ],
+     "slot_index": 0
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": [],
+     "slot_index": 1
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "smoke_sun.png",
+    "image"
+   ],
+   "title": "Load Image: your picture",
+   "color": "#232",
+   "bgcolor": "#353"
+  },
+  {
+   "id": 13,
+   "type": "CLIPLoader",
+   "pos": [
+    1760,
+    40
+   ],
+   "size": [
+    420,
+    110
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "CLIP",
+     "type": "CLIP",
+     "links": [
+      1,
+      2
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CLIPLoader"
+   },
+   "widgets_values": [
+    "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+    "wan",
+    "default"
+   ],
+   "title": "Text encoder"
+  },
+  {
+   "id": 14,
+   "type": "VAELoader",
+   "pos": [
+    1760,
+    190
+   ],
+   "size": [
+    420,
+    60
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "VAE",
+     "type": "VAE",
+     "links": [
+      5,
+      22
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAELoader"
+   },
+   "widgets_values": [
+    "wan_2.1_vae.safetensors"
+   ],
+   "title": "VAE"
+  },
+  {
+   "id": 2,
+   "type": "CLIPTextEncode",
+   "pos": [
+    440,
+    40
+   ],
+   "size": [
+    380,
+    200
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 1
+    }
+   ],
+   "outputs": [
+    {
+     "name": "CONDITIONING",
+     "type": "CONDITIONING",
+     "links": [
+      3
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CLIPTextEncode"
+   },
+   "widgets_values": [
+    "the sun slowly sinks toward the green horizon, soft light"
+   ],
+   "title": "Your prompt: the motion",
+   "color": "#232",
+   "bgcolor": "#353"
+  },
+  {
+   "id": 3,
+   "type": "CLIPTextEncode",
+   "pos": [
+    440,
+    280
+   ],
+   "size": [
+    380,
+    160
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 2
+    }
+   ],
+   "outputs": [
+    {
+     "name": "CONDITIONING",
+     "type": "CONDITIONING",
+     "links": [
+      4
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CLIPTextEncode"
+   },
+   "widgets_values": [
+    "blurry, static, low quality, distorted"
+   ],
+   "title": "Avoid"
+  },
+  {
+   "id": 4,
+   "type": "WanImageToVideo",
+   "pos": [
+    440,
+    480
+   ],
+   "size": [
+    380,
+    210
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "positive",
+     "type": "CONDITIONING",
+     "link": 3
+    },
+    {
+     "name": "negative",
+     "type": "CONDITIONING",
+     "link": 4
+    },
+    {
+     "name": "vae",
+     "type": "VAE",
+     "link": 5
+    },
+    {
+     "name": "start_image",
+     "type": "IMAGE",
+     "link": 6
+    }
+   ],
+   "outputs": [
+    {
+     "name": "positive",
+     "type": "CONDITIONING",
+     "links": [
+      14,
+      18
+     ],
+     "slot_index": 0
+    },
+    {
+     "name": "negative",
+     "type": "CONDITIONING",
+     "links": [
+      15,
+      19
+     ],
+     "slot_index": 1
+    },
+    {
+     "name": "latent",
+     "type": "LATENT",
+     "links": [
+      16
+     ],
+     "slot_index": 2
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "WanImageToVideo"
+   },
+   "widgets_values": [
+    480,
+    832,
+    49,
+    1
+   ],
+   "title": "Video size and length",
+   "color": "#232",
+   "bgcolor": "#353"
+  },
+  {
+   "id": 5,
+   "type": "UNETLoader",
+   "pos": [
+    1760,
+    290
+   ],
+   "size": [
+    420,
+    90
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      7
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "UNETLoader"
+   },
+   "widgets_values": [
+    "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+    "default"
+   ],
+   "title": "Base model: high noise"
+  },
+  {
+   "id": 6,
+   "type": "UNETLoader",
+   "pos": [
+    1760,
+    420
+   ],
+   "size": [
+    420,
+    90
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      8
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "UNETLoader"
+   },
+   "widgets_values": [
+    "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+    "default"
+   ],
+   "title": "Base model: low noise"
+  },
+  {
+   "id": 7,
+   "type": "LoraLoaderModelOnly",
+   "pos": [
+    880,
+    40
+   ],
+   "size": [
+    400,
+    100
+   ],
+   "flags": {},
+   "order": 9,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 7
+    }
+   ],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      9
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "LoraLoaderModelOnly"
+   },
+   "widgets_values": [
+    "wan2.2-i2v-nsfw-lora/NSFW-22-H-e8.safetensors",
+    1.0
+   ],
+   "title": "NSFW LoRA: high (strength)",
+   "color": "#232",
+   "bgcolor": "#353"
+  },
+  {
+   "id": 8,
+   "type": "LoraLoaderModelOnly",
+   "pos": [
+    880,
+    180
+   ],
+   "size": [
+    400,
+    100
+   ],
+   "flags": {},
+   "order": 10,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 8
+    }
+   ],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      10
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "LoraLoaderModelOnly"
+   },
+   "widgets_values": [
+    "wan2.2-i2v-nsfw-lora/NSFW-22-L-e8.safetensors",
+    1.0
+   ],
+   "title": "NSFW LoRA: low (strength)",
+   "color": "#232",
+   "bgcolor": "#353"
+  },
+  {
+   "id": 9,
+   "type": "LoraLoaderModelOnly",
+   "pos": [
+    1760,
+    550
+   ],
+   "size": [
+    420,
+    100
+   ],
+   "flags": {},
+   "order": 11,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 9
+    }
+   ],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      11
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "LoraLoaderModelOnly"
+   },
+   "widgets_values": [
+    "wan2.2-lightx2v/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors",
+    1.0
+   ],
+   "title": "Speed LoRA: high"
+  },
+  {
+   "id": 10,
+   "type": "LoraLoaderModelOnly",
+   "pos": [
+    1760,
+    690
+   ],
+   "size": [
+    420,
+    100
+   ],
+   "flags": {},
+   "order": 12,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 10
+    }
+   ],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      12
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "LoraLoaderModelOnly"
+   },
+   "widgets_values": [
+    "wan2.2-lightx2v/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors",
+    1.0
+   ],
+   "title": "Speed LoRA: low"
+  },
+  {
+   "id": 11,
+   "type": "ModelSamplingSD3",
+   "pos": [
+    1760,
+    830
+   ],
+   "size": [
+    420,
+    60
+   ],
+   "flags": {},
+   "order": 13,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 11
+    }
+   ],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      13
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "ModelSamplingSD3"
+   },
+   "widgets_values": [
+    5.0
+   ],
+   "title": "Model setting: high"
+  },
+  {
+   "id": 12,
+   "type": "ModelSamplingSD3",
+   "pos": [
+    1760,
+    930
+   ],
+   "size": [
+    420,
+    60
+   ],
+   "flags": {},
+   "order": 14,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 12
+    }
+   ],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      17
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "ModelSamplingSD3"
+   },
+   "widgets_values": [
+    5.0
+   ],
+   "title": "Model setting: low"
+  },
+  {
+   "id": 15,
+   "type": "KSamplerAdvanced",
+   "pos": [
+    1340,
+    40
+   ],
+   "size": [
+    360,
+    440
+   ],
+   "flags": {},
+   "order": 15,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 13
+    },
+    {
+     "name": "positive",
+     "type": "CONDITIONING",
+     "link": 14
+    },
+    {
+     "name": "negative",
+     "type": "CONDITIONING",
+     "link": 15
+    },
+    {
+     "name": "latent_image",
+     "type": "LATENT",
+     "link": 16
+    }
+   ],
+   "outputs": [
+    {
+     "name": "LATENT",
+     "type": "LATENT",
+     "links": [
+      20
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "KSamplerAdvanced"
+   },
+   "widgets_values": [
+    "enable",
+    42,
+    "randomize",
+    4,
+    1.0,
+    "euler",
+    "simple",
+    0,
+    2,
+    "enable"
+   ],
+   "title": "Generate part 1 (high noise)"
+  },
+  {
+   "id": 16,
+   "type": "KSamplerAdvanced",
+   "pos": [
+    1340,
+    520
+   ],
+   "size": [
+    360,
+    440
+   ],
+   "flags": {},
+   "order": 16,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 17
+    },
+    {
+     "name": "positive",
+     "type": "CONDITIONING",
+     "link": 18
+    },
+    {
+     "name": "negative",
+     "type": "CONDITIONING",
+     "link": 19
+    },
+    {
+     "name": "latent_image",
+     "type": "LATENT",
+     "link": 20
+    }
+   ],
+   "outputs": [
+    {
+     "name": "LATENT",
+     "type": "LATENT",
+     "links": [
+      21
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "KSamplerAdvanced"
+   },
+   "widgets_values": [
+    "disable",
+    0,
+    "fixed",
+    4,
+    1.0,
+    "euler",
+    "simple",
+    2,
+    10000,
+    "disable"
+   ],
+   "title": "Generate part 2 (low noise)"
+  },
+  {
+   "id": 17,
+   "type": "VAEDecode",
+   "pos": [
+    2240,
+    40
+   ],
+   "size": [
+    420,
+    60
+   ],
+   "flags": {},
+   "order": 17,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "samples",
+     "type": "LATENT",
+     "link": 21
+    },
+    {
+     "name": "vae",
+     "type": "VAE",
+     "link": 22
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      23
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAEDecode"
+   },
+   "widgets_values": [],
+   "title": "Finish frames"
+  },
+  {
+   "id": 18,
+   "type": "CreateVideo",
+   "pos": [
+    2240,
+    140
+   ],
+   "size": [
+    420,
+    180
+   ],
+   "flags": {},
+   "order": 18,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 23
+    }
+   ],
+   "outputs": [
+    {
+     "name": "VIDEO",
+     "type": "VIDEO",
+     "links": [
+      24
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CreateVideo"
+   },
+   "widgets_values": [
+    16.0,
+    "auto",
+    "sRGB",
+    "auto",
+    "none"
+   ],
+   "title": "Frames per second"
+  },
+  {
+   "id": 19,
+   "type": "SaveVideo",
+   "pos": [
+    2240,
+    360
+   ],
+   "size": [
+    420,
+    560
+   ],
+   "flags": {},
+   "order": 19,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "video",
+     "type": "VIDEO",
+     "link": 24
+    }
+   ],
+   "outputs": [
+    {
+     "name": "video",
+     "type": "VIDEO",
+     "links": [],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "SaveVideo"
+   },
+   "widgets_values": [
+    "video/wan",
+    "auto",
+    "auto"
+   ],
+   "title": "Result (saved automatically)"
+  }
+ ],
+ "links": [
+  [
+   1,
+   13,
+   0,
+   2,
+   0,
+   "CLIP"
+  ],
+  [
+   2,
+   13,
+   0,
+   3,
+   0,
+   "CLIP"
+  ],
+  [
+   3,
+   2,
+   0,
+   4,
+   0,
+   "CONDITIONING"
+  ],
+  [
+   4,
+   3,
+   0,
+   4,
+   1,
+   "CONDITIONING"
+  ],
+  [
+   5,
+   14,
+   0,
+   4,
+   2,
+   "VAE"
+  ],
+  [
+   6,
+   1,
+   0,
+   4,
+   3,
+   "IMAGE"
+  ],
+  [
+   7,
+   5,
+   0,
+   7,
+   0,
+   "MODEL"
+  ],
+  [
+   8,
+   6,
+   0,
+   8,
+   0,
+   "MODEL"
+  ],
+  [
+   9,
+   7,
+   0,
+   9,
+   0,
+   "MODEL"
+  ],
+  [
+   10,
+   8,
+   0,
+   10,
+   0,
+   "MODEL"
+  ],
+  [
+   11,
+   9,
+   0,
+   11,
+   0,
+   "MODEL"
+  ],
+  [
+   12,
+   10,
+   0,
+   12,
+   0,
+   "MODEL"
+  ],
+  [
+   13,
+   11,
+   0,
+   15,
+   0,
+   "MODEL"
+  ],
+  [
+   14,
+   4,
+   0,
+   15,
+   1,
+   "CONDITIONING"
+  ],
+  [
+   15,
+   4,
+   1,
+   15,
+   2,
+   "CONDITIONING"
+  ],
+  [
+   16,
+   4,
+   2,
+   15,
+   3,
+   "LATENT"
+  ],
+  [
+   17,
+   12,
+   0,
+   16,
+   0,
+   "MODEL"
+  ],
+  [
+   18,
+   4,
+   0,
+   16,
+   1,
+   "CONDITIONING"
+  ],
+  [
+   19,
+   4,
+   1,
+   16,
+   2,
+   "CONDITIONING"
+  ],
+  [
+   20,
+   15,
+   0,
+   16,
+   3,
+   "LATENT"
+  ],
+  [
+   21,
+   16,
+   0,
+   17,
+   0,
+   "LATENT"
+  ],
+  [
+   22,
+   14,
+   0,
+   17,
+   1,
+   "VAE"
+  ],
+  [
+   23,
+   17,
+   0,
+   18,
+   0,
+   "IMAGE"
+  ],
+  [
+   24,
+   18,
+   0,
+   19,
+   0,
+   "VIDEO"
+  ]
+ ],
+ "groups": [
+  {
+   "title": "1. Your image",
+   "bounding": [
+    22,
+    -12,
+    376,
+    470
+   ],
+   "color": "#3f789e",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "title": "2. Prompt and size",
+   "bounding": [
+    422,
+    -12,
+    416,
+    720
+   ],
+   "color": "#3f789e",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "title": "3. NSFW strength",
+   "bounding": [
+    862,
+    -12,
+    436,
+    310
+   ],
+   "color": "#3f789e",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "title": "Generate: leave alone",
+   "bounding": [
+    1322,
+    -12,
+    396,
+    990
+   ],
+   "color": "#444444",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "title": "Models: leave these alone",
+   "bounding": [
+    1742,
+    -12,
+    456,
+    1020
+   ],
+   "color": "#444444",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "title": "Result",
+   "bounding": [
+    2222,
+    -12,
+    456,
+    950
+   ],
+   "color": "#8A8",
+   "font_size": 24,
+   "flags": {}
+  }
+ ],
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 0.65,
+   "offset": [
+    100,
+    520
+   ]
+  }
+ },
+ "version": 0.4
+}

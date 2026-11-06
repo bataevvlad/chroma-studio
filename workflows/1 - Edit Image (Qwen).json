@@ -1,0 +1,858 @@
+{
+ "id": "c7a9390a-c56e-4020-a80f-9e86586c3b2b",
+ "revision": 0,
+ "last_node_id": 100,
+ "last_link_id": 19,
+ "nodes": [
+  {
+   "id": 100,
+   "type": "MarkdownNote",
+   "pos": [
+    40,
+    -420
+   ],
+   "size": [
+    760,
+    340
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "MarkdownNote"
+   },
+   "widgets_values": [
+    "# Edit an image (Qwen)\n\n1. **Pick your image** in the green *Load Image* box: click \"choose file to upload\".\n2. **Write what should change** in the green *Your edit* box, like \"make the jacket red\".\n3. Click the blue **Run** button at the top of the screen.\n4. Your result shows in *Result* and is saved to `ComfyUI/output`.\n\n**Speed:** about 8 minutes on this Mac at the default settings (20 steps, 0.5 megapixels).\n\n**Faster test:** set steps to 8. **Better quality:** set steps to 30-40, or Size (megapixels) to 1.0. Both take longer.\n\n**NSFW LoRA:** on by default. Change its strength from 0.0 to 1.0. To switch it off, right-click the node and choose Bypass.\n"
+   ]
+  },
+  {
+   "id": 1,
+   "type": "LoadImage",
+   "pos": [
+    40,
+    40
+   ],
+   "size": [
+    340,
+    400
+   ],
+   "flags": {},
+   "order": 1,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      1
+     ],
+     "slot_index": 0
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": [],
+     "slot_index": 1
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "smoke.png",
+    "image"
+   ],
+   "title": "Load Image: your picture",
+   "color": "#232",
+   "bgcolor": "#353"
+  },
+  {
+   "id": 2,
+   "type": "ImageScaleToTotalPixels",
+   "pos": [
+    40,
+    480
+   ],
+   "size": [
+    340,
+    130
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "image",
+     "type": "IMAGE",
+     "link": 1
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      5,
+      8,
+      11
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "ImageScaleToTotalPixels"
+   },
+   "widgets_values": [
+    "lanczos",
+    0.5,
+    8
+   ],
+   "title": "Size (megapixels)",
+   "color": "#232",
+   "bgcolor": "#353"
+  },
+  {
+   "id": 6,
+   "type": "UNETLoader",
+   "pos": [
+    1320,
+    40
+   ],
+   "size": [
+    420,
+    90
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      2
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "UNETLoader"
+   },
+   "widgets_values": [
+    "qwen_image_edit_2511_fp8mixed.safetensors",
+    "default"
+   ],
+   "title": "Base model"
+  },
+  {
+   "id": 7,
+   "type": "CLIPLoader",
+   "pos": [
+    1320,
+    170
+   ],
+   "size": [
+    420,
+    110
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "CLIP",
+     "type": "CLIP",
+     "links": [
+      3,
+      6
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CLIPLoader"
+   },
+   "widgets_values": [
+    "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+    "qwen_image",
+    "default"
+   ],
+   "title": "Text encoder"
+  },
+  {
+   "id": 9,
+   "type": "VAELoader",
+   "pos": [
+    1320,
+    320
+   ],
+   "size": [
+    420,
+    60
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "VAE",
+     "type": "VAE",
+     "links": [
+      4,
+      7,
+      12,
+      18
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAELoader"
+   },
+   "widgets_values": [
+    "qwen_image_vae.safetensors"
+   ],
+   "title": "VAE"
+  },
+  {
+   "id": 8,
+   "type": "LoraLoaderModelOnly",
+   "pos": [
+    860,
+    480
+   ],
+   "size": [
+    400,
+    100
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 2
+    }
+   ],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      9
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "LoraLoaderModelOnly"
+   },
+   "widgets_values": [
+    "qwen-image-edit-plus-nsfw-lora/qwen-image-edit-plus-nsfw-lora.safetensors",
+    1.0
+   ],
+   "title": "NSFW LoRA (strength)",
+   "color": "#232",
+   "bgcolor": "#353"
+  },
+  {
+   "id": 3,
+   "type": "TextEncodeQwenImageEditPlus",
+   "pos": [
+    440,
+    40
+   ],
+   "size": [
+    360,
+    240
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 3
+    },
+    {
+     "name": "vae",
+     "type": "VAE",
+     "link": 4
+    },
+    {
+     "name": "image1",
+     "type": "IMAGE",
+     "link": 5
+    }
+   ],
+   "outputs": [
+    {
+     "name": "CONDITIONING",
+     "type": "CONDITIONING",
+     "links": [
+      14
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "TextEncodeQwenImageEditPlus"
+   },
+   "widgets_values": [
+    "change the red circle into a yellow sun"
+   ],
+   "title": "Your edit: what should change",
+   "color": "#232",
+   "bgcolor": "#353"
+  },
+  {
+   "id": 4,
+   "type": "TextEncodeQwenImageEditPlus",
+   "pos": [
+    440,
+    320
+   ],
+   "size": [
+    360,
+    170
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 6
+    },
+    {
+     "name": "vae",
+     "type": "VAE",
+     "link": 7
+    },
+    {
+     "name": "image1",
+     "type": "IMAGE",
+     "link": 8
+    }
+   ],
+   "outputs": [
+    {
+     "name": "CONDITIONING",
+     "type": "CONDITIONING",
+     "links": [
+      15
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "TextEncodeQwenImageEditPlus"
+   },
+   "widgets_values": [
+    ""
+   ],
+   "title": "Avoid (optional)",
+   "color": "#232",
+   "bgcolor": "#353"
+  },
+  {
+   "id": 10,
+   "type": "ModelSamplingAuraFlow",
+   "pos": [
+    1320,
+    420
+   ],
+   "size": [
+    420,
+    90
+   ],
+   "flags": {},
+   "order": 9,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 9
+    }
+   ],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      10
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "ModelSamplingAuraFlow"
+   },
+   "widgets_values": [
+    3.1,
+    "flow"
+   ],
+   "title": "Model setting"
+  },
+  {
+   "id": 11,
+   "type": "CFGNorm",
+   "pos": [
+    1320,
+    550
+   ],
+   "size": [
+    420,
+    100
+   ],
+   "flags": {},
+   "order": 10,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 10
+    }
+   ],
+   "outputs": [
+    {
+     "name": "patched_model",
+     "type": "MODEL",
+     "links": [
+      13
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CFGNorm"
+   },
+   "widgets_values": [
+    1.0,
+    false
+   ],
+   "title": "Model setting"
+  },
+  {
+   "id": 12,
+   "type": "VAEEncode",
+   "pos": [
+    1320,
+    690
+   ],
+   "size": [
+    420,
+    60
+   ],
+   "flags": {},
+   "order": 11,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "pixels",
+     "type": "IMAGE",
+     "link": 11
+    },
+    {
+     "name": "vae",
+     "type": "VAE",
+     "link": 12
+    }
+   ],
+   "outputs": [
+    {
+     "name": "LATENT",
+     "type": "LATENT",
+     "links": [
+      16
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAEEncode"
+   },
+   "widgets_values": [],
+   "title": "Prepare image"
+  },
+  {
+   "id": 5,
+   "type": "KSampler",
+   "pos": [
+    860,
+    40
+   ],
+   "size": [
+    400,
+    400
+   ],
+   "flags": {},
+   "order": 12,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 13
+    },
+    {
+     "name": "positive",
+     "type": "CONDITIONING",
+     "link": 14
+    },
+    {
+     "name": "negative",
+     "type": "CONDITIONING",
+     "link": 15
+    },
+    {
+     "name": "latent_image",
+     "type": "LATENT",
+     "link": 16
+    }
+   ],
+   "outputs": [
+    {
+     "name": "LATENT",
+     "type": "LATENT",
+     "links": [
+      17
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "KSampler"
+   },
+   "widgets_values": [
+    42,
+    "randomize",
+    20,
+    2.5,
+    "euler",
+    "simple",
+    1.0
+   ],
+   "title": "Generate: steps here",
+   "color": "#232",
+   "bgcolor": "#353"
+  },
+  {
+   "id": 13,
+   "type": "VAEDecode",
+   "pos": [
+    1800,
+    40
+   ],
+   "size": [
+    420,
+    60
+   ],
+   "flags": {},
+   "order": 13,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "samples",
+     "type": "LATENT",
+     "link": 17
+    },
+    {
+     "name": "vae",
+     "type": "VAE",
+     "link": 18
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      19
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAEDecode"
+   },
+   "widgets_values": [],
+   "title": "Finish image"
+  },
+  {
+   "id": 14,
+   "type": "SaveImage",
+   "pos": [
+    1800,
+    140
+   ],
+   "size": [
+    420,
+    520
+   ],
+   "flags": {},
+   "order": 14,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 19
+    }
+   ],
+   "outputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "links": [],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "SaveImage"
+   },
+   "widgets_values": [
+    "edit"
+   ],
+   "title": "Result (saved automatically)"
+  }
+ ],
+ "links": [
+  [
+   1,
+   1,
+   0,
+   2,
+   0,
+   "IMAGE"
+  ],
+  [
+   2,
+   6,
+   0,
+   8,
+   0,
+   "MODEL"
+  ],
+  [
+   3,
+   7,
+   0,
+   3,
+   0,
+   "CLIP"
+  ],
+  [
+   4,
+   9,
+   0,
+   3,
+   1,
+   "VAE"
+  ],
+  [
+   5,
+   2,
+   0,
+   3,
+   2,
+   "IMAGE"
+  ],
+  [
+   6,
+   7,
+   0,
+   4,
+   0,
+   "CLIP"
+  ],
+  [
+   7,
+   9,
+   0,
+   4,
+   1,
+   "VAE"
+  ],
+  [
+   8,
+   2,
+   0,
+   4,
+   2,
+   "IMAGE"
+  ],
+  [
+   9,
+   8,
+   0,
+   10,
+   0,
+   "MODEL"
+  ],
+  [
+   10,
+   10,
+   0,
+   11,
+   0,
+   "MODEL"
+  ],
+  [
+   11,
+   2,
+   0,
+   12,
+   0,
+   "IMAGE"
+  ],
+  [
+   12,
+   9,
+   0,
+   12,
+   1,
+   "VAE"
+  ],
+  [
+   13,
+   11,
+   0,
+   5,
+   0,
+   "MODEL"
+  ],
+  [
+   14,
+   3,
+   0,
+   5,
+   1,
+   "CONDITIONING"
+  ],
+  [
+   15,
+   4,
+   0,
+   5,
+   2,
+   "CONDITIONING"
+  ],
+  [
+   16,
+   12,
+   0,
+   5,
+   3,
+   "LATENT"
+  ],
+  [
+   17,
+   5,
+   0,
+   13,
+   0,
+   "LATENT"
+  ],
+  [
+   18,
+   9,
+   0,
+   13,
+   1,
+   "VAE"
+  ],
+  [
+   19,
+   13,
+   0,
+   14,
+   0,
+   "IMAGE"
+  ]
+ ],
+ "groups": [
+  {
+   "title": "1. Your image",
+   "bounding": [
+    22,
+    -12,
+    376,
+    640
+   ],
+   "color": "#3f789e",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "title": "2. Describe the edit",
+   "bounding": [
+    422,
+    -12,
+    396,
+    520
+   ],
+   "color": "#3f789e",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "title": "3. Quality",
+   "bounding": [
+    842,
+    -12,
+    436,
+    610
+   ],
+   "color": "#3f789e",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "title": "Models: leave these alone",
+   "bounding": [
+    1302,
+    -12,
+    456,
+    780
+   ],
+   "color": "#444444",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "title": "Result",
+   "bounding": [
+    1782,
+    -12,
+    456,
+    690
+   ],
+   "color": "#8A8",
+   "font_size": 24,
+   "flags": {}
+  }
+ ],
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 0.65,
+   "offset": [
+    100,
+    520
+   ]
+  }
+ },
+ "version": 0.4
+}
